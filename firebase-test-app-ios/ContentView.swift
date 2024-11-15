@@ -6,17 +6,28 @@
 //
 
 import SwiftUI
+import FirebasePerformance
 
 struct ContentView: View {
     var body: some View {
+        
         VStack {
+            
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Button("Click me"){
+                
+            }
+            Button("Crash") {
+              fatalError("Crash was triggered")
+            }
         }
         .padding()
+        Spacer()
+        
     }
+        
 }
 
 #Preview {
