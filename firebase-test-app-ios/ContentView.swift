@@ -24,6 +24,7 @@ struct ContentView: View {
             }
         }
         .resume()
+        
     }
     
     func makeUntrackedNetworkCall() async {
@@ -42,31 +43,46 @@ struct ContentView: View {
             print("Error: \(error.localizedDescription)")
         }
     }
+    @State private var welcomeMessage: String = remoteConfig["welcome_message"].stringValue ?? "Loading..."
+        @State private var featureEnabled: Bool = remoteConfig["feature_enabled"].boolValue
     
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Firebase Performance Test")
-                .font(.headline)
-            
-            Button("Tracked Network Call") {
-                makeTrackedNetworkCall()
-            }
-            .buttonStyle(.borderedProminent)
-            
-            Button("Untracked Network Call") {
-                Task {
-                    await makeUntrackedNetworkCall()
+            VStack(spacing: 20) {
+                Text(welcomeMessage)
+                    .font(.headline)
+                
+                if featureEnabled {
+                    Text("Feature is enabled!")
+                        .foregroundColor(.green)
+                } else {
+                    Text("Feature is disabled.")
+                        .foregroundColor(.red)
                 }
+                
+                Button("Tracked Network Call") {
+                    makeTrackedNetworkCall()
+                }
+                .buttonStyle(.borderedProminent)
+                
+                Button("Untracked Network Call") {
+                    Task {
+                        await makeUntrackedNetworkCall()
+                    }
+                }
+                .buttonStyle(.bordered)
+                
+                Button("Crash App") {
+                    fatalError("This is a test crash")
+                }
+                .buttonStyle(.bordered)
             }
-            .buttonStyle(.bordered)
-            
-            Button("Crash App") {
-                fatalError("This is a test crash")
+            .padding()
+            .onAppear {
+                // Update state on appearance if necessary
+                welcomeMessage = remoteConfig["welcome_message"].stringValue ?? "Welcome!"
+                featureEnabled = remoteConfig["feature_enabled"].boolValue
             }
-            .buttonStyle(.bordered)
         }
-        .padding()
-    }
 }
 
 #Preview {
