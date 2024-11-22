@@ -9,7 +9,36 @@ import SwiftUI
 import Firebase
 import FirebasePerformance
 import FirebaseCore
+import FirebaseRemoteConfig
 import Firebase
+
+let remoteConfig = RemoteConfig.remoteConfig()
+
+func setupRemoteConfig() {
+    let remoteConfig = RemoteConfig.remoteConfig()
+    let nonExistentPlist = "NonExistentFile"
+    
+    // Try loading a non-existent plist file
+    if let filePath = Bundle.main.path(forResource: nonExistentPlist, ofType: "plist") {
+        remoteConfig.setDefaults(fromPlist: filePath)
+    } else {
+        print("Missing RemoteConfig plist file: \(nonExistentPlist).plist")
+    }
+}
+
+func fetchAndUseRemoteConfig() {
+    let remoteConfig = RemoteConfig.remoteConfig()
+    
+    let key = "exampleKey"
+    let key2 = "exampleKey2"
+    let value = remoteConfig.configValue(forKey: key).numberValue
+    let value2 = remoteConfig.configValue(forKey: key2).numberValue
+    print("Value for \(key): \(value)")
+    print("Value for \(key2): \(value2)")
+}
+
+
+
 
 
 class AppDelegate: NSObject, UIApplicationDelegate {
@@ -20,8 +49,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(true)
         
+        setupRemoteConfig()
+        fetchAndUseRemoteConfig()
+        
         return true
     }
+    
     
     @main
     struct YourApp: App {
