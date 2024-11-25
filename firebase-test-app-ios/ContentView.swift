@@ -43,10 +43,22 @@ struct ContentView: View {
             print("Error: \(error.localizedDescription)")
         }
     }
-    
+    @State private var welcomeMessage: String = remoteConfig["welcome_message"].stringValue ?? "Loading..."
+    @State private var featureEnabled: Bool = remoteConfig["feature_enabled"].boolValue
+    @State private var jsonData: [String: Any]? = ["name":"Michael"] ?? nil
+
     var body: some View {
             VStack(spacing: 20) {
+                Text(welcomeMessage)
+                    .font(.headline)
                 
+                if featureEnabled {
+                    Text("Feature is enabled!")
+                        .foregroundColor(.green)
+                } else {
+                    Text("Feature is disabled.")
+                        .foregroundColor(.red)
+                }
                 
                 Button("Tracked Network Call") {
                     makeTrackedNetworkCall()
@@ -66,6 +78,11 @@ struct ContentView: View {
                 .buttonStyle(.bordered)
             }
             .padding()
+            .onAppear {
+                // Update state on appearance if necessary
+                welcomeMessage = remoteConfig["welcome_message"].stringValue ?? "Welcome!"
+                featureEnabled = remoteConfig["feature_enabled"].boolValue
+            }
         }
 }
 
