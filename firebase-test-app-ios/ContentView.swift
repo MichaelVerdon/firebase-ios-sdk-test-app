@@ -6,9 +6,13 @@
 //
 
 import SwiftUI
-import FirebasePerformance
+import FirebaseRemoteConfigInternal
 
 struct ContentView: View {
+    
+    private var remoteConfig: RemoteConfig? {
+            AppDelegate.shared.remoteConfig
+        }
     
     func makeTrackedNetworkCall() {
         guard let url = URL(string: "https://jsonplaceholder.typicode.com/posts") else { return }

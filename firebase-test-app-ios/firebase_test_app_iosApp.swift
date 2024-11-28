@@ -7,38 +7,39 @@
 
 import SwiftUI
 import Firebase
-import FirebasePerformance
 import FirebaseCore
 import FirebaseRemoteConfig
 import Firebase
 
-let remoteConfig = RemoteConfig.remoteConfig()
-
-func setupDefaults() {
-    let defaults: [String: NSObject] = [
-        "welcome_message": "Welcome to the app!" as NSObject,
-        "feature_enabled": false as NSObject
-    ]
-    remoteConfig.setDefaults(defaults)
-}
-
-
-
-class AppDelegate: NSObject, UIApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate {
     
-    func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+    var remoteConfig: RemoteConfig?
+    static let shared = AppDelegate()
+    
+    func applicationDidFinishLaunching(_ aNotification: Notification){
         FirebaseApp.configure()
+        
+        let remoteConfig = RemoteConfig.remoteConfig()
         
         Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(true)
         
         setupDefaults() // Set default values
         fetchRemoteConfigValues() // Fetch and activate Remote Config values
-        
-        return true
+   
     }
     
+    private func setupDefaults() {
+        guard let remoteConfig = remoteConfig else { return }
+        let defaults: [String: NSObject] = [
+            "welcome_message": "Welcome to the app!" as NSObject,
+            "feature_enabled": false as NSObject
+        ]
+        remoteConfig.setDefaults(defaults)
+    }
+
     private func fetchRemoteConfigValues() {
+        guard let remoteConfig = remoteConfig
+        else { return }
         let fetchDuration: TimeInterval = 3600 // 1 hour
         remoteConfig.fetch(withExpirationDuration: fetchDuration) { status, error in
             if status == .success {
@@ -51,11 +52,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             }
         }
     }
+}
     
     @main
     struct YourApp: App {
         // register app delegate for Firebase setup
-        @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+        @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
         
         
         var body: some Scene {
@@ -72,4 +74,3 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             ContentView()
         }
     }
-}
