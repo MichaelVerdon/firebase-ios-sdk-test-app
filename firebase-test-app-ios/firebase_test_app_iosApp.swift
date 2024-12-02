@@ -19,11 +19,16 @@ func setupDefaults() {
         "welcome_message": "Welcome to the app!" as NSObject,
         "feature_enabled": false as NSObject
     ]
+    
+    remoteConfig.setDefaults(defaults)
+    
     let settings = RemoteConfigSettings()
     settings.minimumFetchInterval = 2 * 60 * 60
     settings.fetchTimeout = 30
-    remoteConfig = .remoteConfig()
+    
+    remoteConfig.configSettings = settings
 }
+
 
 
 
@@ -51,6 +56,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                 }
             } else {
                 print("Config fetch failed: \(error?.localizedDescription ?? "No error available.")")
+                print("SETTINGS FETCHTIMEOUT =>", remoteConfig.configSettings.fetchTimeout)
             }
         }
     }
